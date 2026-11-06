@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>架构 Architecture · Verifiable Trade Event Protocol</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="ossbar">🌟 本项目已开源 Open-sourced · <a href="https://github.com/sinyu1998-eng">GitHub 仓库 Repository</a> · MIT License · 研究文档公开，欢迎 Issue 讨论 <span class="en">— public research, issues welcome</span> →</div>
+<header class="site">
+  <a class="logo" href="index.html">VTEP<b>·</b>Protocol</a>
+  <nav>
+    <a class="" href="index.html">首页 Home</a>
+    <a class="" href="whitepaper.html">白皮书 Whitepaper</a>
+    <a class="on" href="architecture.html">架构 Architecture</a>
+    <a class="" href="scenarios.html">场景 Scenarios</a>
+    <a class="" href="roadmap.html">路线 Roadmap</a>
+    <a class="" href="peer.html">参考 References</a>
+  </nav>
+</header>
+
+<div class="hero" style="padding:56px 6vw 60px">
+  <div class="kicker">Architecture · §5</div>
+  <h1>统一 TEE + Escrow 技术架构</h1>
+  <div class="en">Facts → Proof → Settlement, with explicit trust boundaries</div>
+</div>
+<section class="doc">
+  <div class="toc"><b style="color:var(--purple)">本页目录 · </b>
+    <a href="#flow">数据流</a><a href="#proof">证明结构</a><a href="#checks">链上约束</a><a href="#sec">安全重点</a><a href="#extra">实现补充</a>
+  </div>
+
+  <h2 id="flow"><span class="num">01</span>数据流<span class="en">End-to-end flow</span></h2>
+  <pre>可信数据源：船公司 / eBL / 银行 / 签发机构
+        ↓
+TEE Connector：认证读取 + 来源校验
+        ↓
+标准化 Trade Event  →  规则引擎：订单匹配 / 时间 / 状态 / 授权
+        ↓
+证明层 ── TEE 远程证明 + 签名声明 ──┐
+        └─ 可选 ZK Proof ───────────┤
+                                    ↓
+                        TradeEventVerifier
+                                    ↓   ← 争议策略 / 仲裁
+                        MilestoneOrchestrator
+                                    ↓
+                USDC Escrow：放款 / 冻结 / 退款</pre>
+  <p>图中的「单一 TEE」指<b>一套可配置、可审计的统一验证程序</b>，而非单个物理服务器。评级属于技术研究判断，不是声称这些数据在全球都已开放、统一或可无许可访问。</p>
+
+  <h2 id="proof"><span class="num">02</span>简化证明输出<span class="en">Illustrative TradeEventProof</span></h2>
+  <pre><span class="c">// ILLUSTRATIVE — NOT AUDITED. 示意结构，非可部署合约</span>
+struct TradeEventProof {
+    bytes32 orderCommitment;          <span class="c">// 订单承诺</span>
+    bytes32 milestoneId;              <span class="c">// 里程碑</span>
+    bytes32 trustedSourceId;          <span class="c">// 可信数据源</span>
+    bytes32 sourceRecordCommitment;   <span class="c">// 源记录承诺</span>
+    bytes32 eventType;                <span class="c">// 事件类型</span>
+    bytes32 policyHash;               <span class="c">// 规则版本</span>
+    bytes32 verifierVersion;          <span class="c">// 验证器版本</span>
+    uint256 expiry;                   <span class="c">// 过期时间</span>
+    bytes32 nullifier;                <span class="c">// 防重放标识</span>
+}</pre>
+  <p>这只是<b>示意数据结构</b>。实际合约还需要链 ID、合约域隔离、签名者授权、数据签发时间、撤销策略、验证器密钥轮换等保护。对应文件：<a href="contracts/TradeEventProof.sol">contracts/TradeEventProof.sol</a>（仅用于说明）。</p>
+  <table class="tbl">
+    <tr><th>字段组</th><th>回答的问题</th><th>缺失时的风险</th></tr>
+    <tr><td class="mono">orderCommitment / milestoneId</td><td>这条证明绑定到哪笔订单、哪个里程碑？</td><td>跨订单复用证明</td></tr>
+    <tr><td class="mono">trustedSourceId / sourceRecordCommitment</td><td>数据来自谁、原始记录是哪一条？</td><td>来源不可核验</td></tr>
+    <tr><td class="mono">eventType / policyHash / verifierVersion</td><td>按哪一版规则、哪个程序判定的？</td><td>规则变更无法追溯</td></tr>
+    <tr><td class="mono">expiry / nullifier</td><td>证明是否过期、结算授权是否已被用过？</td><td>重放与重复放款</td></tr>
+  </table>
+
+  <h2 id="checks"><span class="num">03</span>链上可以检查的约束<span class="en">Onchain-checkable constraints</span></h2>
+  <ol>
+    <li>来源在该订单的认可数据源集合内；</li>
+    <li>订单、货物 / 集装箱和事件存在受信任的绑定；</li>
+    <li>事件是<b>实际发生状态</b>而不是计划状态；</li>
+    <li>事件时间满足合同约束；</li>
+    <li>证明绑定到正确的合约、链、订单和里程碑；</li>
+    <li>证明未过期、未撤销，且结算授权未被重复使用。</li>
+  </ol>
+
+  <h2 id="sec"><span class="num">04</span>安全重点<span class="en">Security emphasis</span></h2>
+  <div class="callout"><b>TEE 处理过 API 响应，不代表 API 响应没有被伪造。</b>TLS 终端认证、数据源签名、会话安全和输入来源证明必须纳入威胁模型。<b>ZKP 也不能自动弥补错误的原始数据。</b><br><span class="en">An attested execution environment does not authenticate its inputs.</span></div>
+
+  <h2 id="extra"><span class="num">05</span>实现补充<span class="en">What an implementation must add</span></h2>
+  <p>除上表九字段外，实际系统还需要处理：链 ID 与合约域隔离、签名者授权与轮换、数据签发时间、撤销策略、争议冻结与仲裁、部分里程碑放款、外部事件更正或撤销、资金不足与重复执行、失效证明与权限变更。详见 <a href="scenarios.html">场景与多里程碑协议</a>。</p>
+  <p class="note-en">Peer 式设计中「资金托管与证明验证分离」是最值得参考的模块化思想；但贸易 Escrow 需要新增分期放款、可信货物 / 单据绑定、长周期争议与法律责任安排。</p>
+</section>
+
+<footer class="site">
+  <div><b>Verifiable Trade Event Protocol</b> · 可验证贸易履约事件协议 <span class="sep">|</span> <a href="LICENSE">MIT License</a> <span class="sep">|</span> <a href="docs/RESEARCH.md">研究文档原文 Source</a> <span class="sep">|</span> <a href="https://github.com/sinyu1998-eng">GitHub</a></div>
+  <div style="margin-top:8px;font-size:12px">公开研究框架，不是已完成的系统安全审计、法律意见或第三方数据接入可用性承诺；文中所有金额、里程碑比例均为示例。<span class="en"> A public research framework — not an audit, legal opinion, or data-availability commitment.</span></div>
+</footer>
+</body></html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>首页 Home · Verifiable Trade Event Protocol</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="ossbar">🌟 本项目已开源 Open-sourced · <a href="https://github.com/sinyu1998-eng">GitHub 仓库 Repository</a> · MIT License · 研究文档公开，欢迎 Issue 讨论 <span class="en">— public research, issues welcome</span> →</div>
+<header class="site">
+  <a class="logo" href="index.html">VTEP<b>·</b>Protocol</a>
+  <nav>
+    <a class="on" href="index.html">首页 Home</a>
+    <a class="" href="whitepaper.html">白皮书 Whitepaper</a>
+    <a class="" href="architecture.html">架构 Architecture</a>
+    <a class="" href="scenarios.html">场景 Scenarios</a>
+    <a class="" href="roadmap.html">路线 Roadmap</a>
+    <a class="" href="peer.html">参考 References</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="kicker">Open Research · DCSA T&amp;T → TEE → USDC Escrow</div>
+  <h1>可验证贸易履约事件协议</h1>
+  <div class="en">Verifiable Trade Event Protocol</div>
+  <div class="tagline">将可信第三方产生的标准化贸易事件，转换成可验证的付款条件。</div>
+  <p>不是让 AI 自动判定货物质量，而是把国际贸易中已经标准化、由船公司、银行、eBL 平台产生的数字事件，变成资金托管合约可核验的放款条件。</p>
+  <p class="en">Not "AI judges cargo quality" — standardized third-party trade events become verifiable conditions for programmable escrow.</p>
+  <div class="btns">
+    <a class="btn gold" href="whitepaper.html">读白皮书 Whitepaper →</a>
+    <a class="btn ghost" href="architecture.html">技术架构 Architecture</a>
+  </div>
+</div>
+
+<section>
+  <h2>01 · 核心判断<span class="en">The core judgement</span></h2>
+  <div class="callout" style="font-size:15px"><b>最值得优先验证的，不是让 AI 自动判定货物质量，而是将国际贸易中已经标准化、由可信第三方产生的数字事件转化为自动放款条件。</b> 建议从 <b>DCSA Track &amp; Trace → TEE 验证 → USDC Escrow</b> 切入，逐步扩展到电子提单与单据相符付款。<br><span class="en">Start from trusted carrier events, not from automated quality judgement.</span></div>
+  <p style="margin-top:20px;font-size:15px">国际贸易存在大量标准化业务记录，但数据分散在船公司、银行、海关、港口和电子单据平台中。Peer（原 ZKP2P）的核心思路是<b>对链下支付事实生成可验证证明，再触发链上资金托管合约结算</b>；把这一模式迁移到国际贸易，就得到下面的三层结构。</p>
+</section>
+
+<section>
+  <h2>02 · 三层架构<span class="en">Three layers: facts / proof / settlement</span></h2>
+  <div class="chain">
+    <div class="node"><b>① 事实层 Facts</b><div class="en">Read trusted sources</div><p>读取可信数据源的物流、单据、支付和交付状态：承运人、eBL 平台、银行 / PSP、签发机构。</p></div>
+    <div class="arrow">→</div>
+    <div class="node"><b>② 证明层 Proof</b><div class="en">Verify source &amp; rules</div><p>用 TEE 验证来源和业务规则，必要时以 ZKP 隐藏敏感字段；产出结构化签名声明。</p></div>
+    <div class="arrow">→</div>
+    <div class="node"><b>③ 结算层 Settlement</b><div class="en">Programmable escrow</div><p>由 Peer 式 Escrow 根据经验证的事件，释放、冻结或退回 USDC。</p></div>
+  </div>
+  <div class="warn"><b>关键：</b>三层各解决一件事，不能互相替代。数据上链之前，先要证明「这条记录确实来自那个可信源头，且绑定到这笔订单」。<span class="en"> Each layer solves one thing; none substitutes for the others.</span></div>
+</section>
+
+<section>
+  <h2>03 · 必须区分的三种能力<span class="en">Three capabilities that are NOT the same</span></h2>
+  <div class="grid g3">
+    <div class="card"><h3>数据来源认证</h3><div class="en">Source authentication</div><p>验证记录确实来自船公司、银行或其他获认可的签发机构。</p></div>
+    <div class="card"><h3>TEE 远程证明</h3><div class="en">TEE remote attestation</div><p>证明特定受保护环境运行了指定验证程序；<b>不自动证明输入内容真实</b>。</p></div>
+    <div class="card"><h3>ZKP</h3><div class="en">Zero-knowledge proof</div><p>不公开完整业务数据，证明预设计算约束成立；<b>本身不能证明现实货物或原始 API 记录真实</b>。</p></div>
+  </div>
+  <div class="warn"><b>因此第一版不一定要同时引入 TEE 和 ZKP。</b>可以先使用 <b>可信 API / 签名数据 + TEE 远程证明 + 结构化签名 + 链上验证</b>，再对隐私与信任最敏感的场景加入 ZK 电路。<span class="en"> Start with signed data + TEE; add ZK circuits later where privacy demands it.</span></div>
+</section>
+
+<section>
+  <h2>04 · 首要研究题目<span class="en">Primary research question</span></h2>
+  <div class="callout" style="font-size:16px"><b>DCSA Track &amp; Trace 2.2 → 可信数据源验证 / TEE → Peer-style USDC Escrow</b></div>
+  <p style="margin-top:18px;font-size:15px">P0 最小原型限定<b>一个承运人、一个贸易线路、一个标准化物流事件、一条付款规则</b>，先验证四个事实：</p>
+  <ol class="flowlist" style="margin-top:14px">
+    <li>能否持续、合法地获取足够可信的事件数据？</li>
+    <li>如何证明 API 事件属于这笔订单而非另一笔订单？</li>
+    <li>该事件对买卖双方是否足以构成一个有商业意义的付款条件？</li>
+    <li>外部事件出现错误或回滚时，合约如何保护资金？</li>
+  </ol>
+  <div class="btns" style="justify-content:flex-start;margin-top:24px">
+    <a class="btn gold" href="roadmap.html">看 P0 / P1 / P2 优先级 →</a>
+    <a class="btn ghost" href="docs/RESEARCH.md" style="color:var(--purple);border-color:var(--purple)">Markdown 原文</a>
+  </div>
+</section>
+
+<section>
+  <h2>05 · 写在设计里的硬边界<span class="en">Hard boundaries, stated up front</span></h2>
+  <div class="warn">
+    <b>「船公司记录已装船」不等于「箱内货物符合质量要求」。</b><br>
+    <b>单据内部一致不等于交易真实</b>——若文件仅由卖家自行上传、没有可信签发者或原始系统校验，系统只能证明文件内部一致。<br>
+    <b>TEE 处理过 API 响应，不代表响应没有被伪造</b>；TLS 终端认证、数据源签名、会话安全和输入来源证明必须纳入威胁模型。<br>
+    <b>Escrow 不是信用证的完整替代品</b>；它默认不提供银行信用背书、融资、成熟的国际争议制度或法律执行网络。
+  </div>
+  <p class="note-en" style="margin-top:16px">本文是基于公开技术标准与协议设计思路提出的研究框架，不是已完成的系统安全审计、法律意见或第三方数据接入可用性承诺。文中所有金额、里程碑比例均为示例。</p>
+</section>
+
+<footer class="site">
+  <div><b>Verifiable Trade Event Protocol</b> · 可验证贸易履约事件协议 <span class="sep">|</span> <a href="LICENSE">MIT License</a> <span class="sep">|</span> <a href="docs/RESEARCH.md">研究文档原文 Source</a> <span class="sep">|</span> <a href="https://github.com/sinyu1998-eng">GitHub</a></div>
+  <div style="margin-top:8px;font-size:12px">公开研究框架，不是已完成的系统安全审计、法律意见或第三方数据接入可用性承诺；文中所有金额、里程碑比例均为示例。<span class="en"> A public research framework — not an audit, legal opinion, or data-availability commitment.</span></div>
+</footer>
+</body></html>

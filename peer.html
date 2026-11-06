@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>参考 References · Verifiable Trade Event Protocol</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="ossbar">🌟 本项目已开源 Open-sourced · <a href="https://github.com/sinyu1998-eng">GitHub 仓库 Repository</a> · MIT License · 研究文档公开，欢迎 Issue 讨论 <span class="en">— public research, issues welcome</span> →</div>
+<header class="site">
+  <a class="logo" href="index.html">VTEP<b>·</b>Protocol</a>
+  <nav>
+    <a class="" href="index.html">首页 Home</a>
+    <a class="" href="whitepaper.html">白皮书 Whitepaper</a>
+    <a class="" href="architecture.html">架构 Architecture</a>
+    <a class="" href="scenarios.html">场景 Scenarios</a>
+    <a class="" href="roadmap.html">路线 Roadmap</a>
+    <a class="on" href="peer.html">参考 References</a>
+  </nav>
+</header>
+
+<div class="hero" style="padding:56px 6vw 60px">
+  <div class="kicker">References · §6 &amp; sources</div>
+  <h1>Peer 参考与组件映射</h1>
+  <div class="en">What to borrow, what NOT to copy</div>
+</div>
+<section class="doc">
+  <h2><span class="num">01</span>值得参考的模块化思想<span class="en">Separation of escrow and proof verification</span></h2>
+  <p>参考 <a href="https://github.com/zkp2p/zkp2p-contracts">Peer / ZKP2P 开源合约</a> 中的模块化思想，尤其是<b>资金托管与证明验证分离</b>。</p>
+  <table class="tbl">
+    <tr><th>Peer 式组件 / 设计模式</th><th>可建立的对应组件</th><th>主要作用</th></tr>
+    <tr><td>Escrow / Vault</td><td class="mono">TradeEscrow</td><td>保管 USDC 与分期资金</td></tr>
+    <tr><td>Orchestrator</td><td class="mono">MilestoneOrchestrator</td><td>生命周期及结算状态机</td></tr>
+    <tr><td>Payment Verifier</td><td class="mono">TradeEventVerifier</td><td>验证可信贸易事件与证明</td></tr>
+    <tr><td>多方证明验证</td><td>多签发者 / 多验货方门槛</td><td>减少单一证明主体风险</td></tr>
+    <tr><td>Nullifier Registry</td><td>结算授权防重放</td><td>防止同一授权重复放款</td></tr>
+    <tr><td>Dispute Policy</td><td class="mono">DisputePolicy</td><td>争议期、冻结及退款</td></tr>
+    <tr><td>Stake Vault / Whitelist</td><td>验货机构准入及可选保证金</td><td>增加问责能力</td></tr>
+  </table>
+
+  <h2><span class="num">02</span>不能直接照搬<span class="en">Do NOT copy as-is</span></h2>
+  <div class="warn"><b>Peer 的核心业务是支付事实的证明和 P2P 兑换</b>，其时间尺度、退款逻辑、保证金责任与国际贸易并不相同。贸易 Escrow 需要新增<b>分期放款、可信货物 / 单据绑定、长周期争议与法律责任安排</b>。开源代码许可也不等于修改后的系统获得安全保证。</div>
+
+  <h2><span class="num">03</span>产品定位的来处<span class="en">Why the protocol framing</span></h2>
+  <div class="callout" style="font-size:15px">与其从「AI 智能眼镜验货平台」切入，不如考虑更清晰的底层定位：<br><b>Verifiable Trade Event Protocol（可验证贸易履约事件协议）：将可信第三方产生的标准化贸易事件转换成可验证的付款条件。</b><br>向上连接物流、eBL、银行和电子单据平台，向下连接 Peer 式的可编程资金托管。AI 眼镜则服务于没有权威数字记录的非标准化现场事件。</div>
+  <p class="note-en">本项目采用这一「协议」视角作为研究框架；它与 CloudSail 商业产品的运营系统是两件事，详见 README「与 CloudSail 商业产品的关系」。</p>
+
+  <h2><span class="num">04</span>参考资料<span class="en">References</span></h2>
+  <ul>
+    <li><a href="https://github.com/zkp2p/zkp2p-contracts">Peer / ZKP2P 开源合约</a></li>
+    <li><a href="https://dcsa.org/standards/track-and-trace">DCSA Track &amp; Trace</a></li>
+    <li><a href="https://reference.dcsa.org/content/standards/guidelines/implementation-guides/implementing-track-and-trace">DCSA Implementation Guides</a></li>
+    <li><a href="https://dcsa.org/standards/bill-of-lading">DCSA Electronic Bill of Lading</a></li>
+    <li><a href="https://uncitral.un.org/en/texts/ecommerce/modellaw/electronic_transferable_records">UNCITRAL MLETR：电子可转让记录示范法</a></li>
+  </ul>
+
+  <hr>
+  <p class="note-en">说明：本文是基于公开技术标准与协议设计思路提出的研究框架，不是已完成的系统安全审计、法律意见或第三方数据接入可用性承诺。文中所有金额、里程碑比例均为示例。研究文档原文见 <a href="docs/RESEARCH.md">docs/RESEARCH.md</a>。</p>
+</section>
+
+<footer class="site">
+  <div><b>Verifiable Trade Event Protocol</b> · 可验证贸易履约事件协议 <span class="sep">|</span> <a href="LICENSE">MIT License</a> <span class="sep">|</span> <a href="docs/RESEARCH.md">研究文档原文 Source</a> <span class="sep">|</span> <a href="https://github.com/sinyu1998-eng">GitHub</a></div>
+  <div style="margin-top:8px;font-size:12px">公开研究框架，不是已完成的系统安全审计、法律意见或第三方数据接入可用性承诺；文中所有金额、里程碑比例均为示例。<span class="en"> A public research framework — not an audit, legal opinion, or data-availability commitment.</span></div>
+</footer>
+</body></html>

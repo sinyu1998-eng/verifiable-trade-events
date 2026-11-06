@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>场景 Scenarios · Verifiable Trade Event Protocol</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="ossbar">🌟 本项目已开源 Open-sourced · <a href="https://github.com/sinyu1998-eng">GitHub 仓库 Repository</a> · MIT License · 研究文档公开，欢迎 Issue 讨论 <span class="en">— public research, issues welcome</span> →</div>
+<header class="site">
+  <a class="logo" href="index.html">VTEP<b>·</b>Protocol</a>
+  <nav>
+    <a class="" href="index.html">首页 Home</a>
+    <a class="" href="whitepaper.html">白皮书 Whitepaper</a>
+    <a class="" href="architecture.html">架构 Architecture</a>
+    <a class="on" href="scenarios.html">场景 Scenarios</a>
+    <a class="" href="roadmap.html">路线 Roadmap</a>
+    <a class="" href="peer.html">参考 References</a>
+  </nav>
+</header>
+
+<div class="hero" style="padding:56px 6vw 60px">
+  <div class="kicker">Scenarios · §2–§4</div>
+  <h1>哪些环节、哪三种场景</h1>
+  <div class="en">Event suitability, three application scenarios, multi-milestone escrow</div>
+</div>
+<section class="doc">
+  <div class="toc"><b style="color:var(--purple)">本页目录 · </b>
+    <a href="#rate">环节评级</a><a href="#s1">装船即付款</a><a href="#s2">eBL Escrow</a><a href="#s3">单据相符</a><a href="#multi">多里程碑</a>
+  </div>
+
+  <h2 id="rate"><span class="num">01</span>哪些贸易环节适合单一验证程序<span class="en">Suitability ratings</span></h2>
+  <p>以下评级属于<b>技术研究判断</b>，不是声称这些数据在全球都已开放、统一或可无许可访问。</p>
+  <table class="tbl">
+    <tr><th>业务环节</th><th>标准化程度</th><th>统一 TEE 验证可行性</th><th>对 Escrow 的价值</th><th>关键依赖</th></tr>
+    <tr><td>物流节点（装船、卸船、到港）</td><td>高</td><td>高</td><td>很高</td><td>承运人可信事件 API</td></tr>
+    <tr><td>电子提单（eBL）签发及状态</td><td>很高</td><td>高</td><td>很高</td><td>eBL 平台、法律上的控制权事件</td></tr>
+    <tr><td>商业发票与订单匹配</td><td>高</td><td>很高</td><td>高</td><td>可信签发者、结构化数据</td></tr>
+    <tr><td>银行或支付机构入账确认</td><td>高</td><td>高</td><td>很高</td><td>银行 / PSP 授权数据接口</td></tr>
+    <tr><td>海关放行记录</td><td>中高</td><td>中</td><td>高</td><td>各法域海关接口及权限</td></tr>
+    <tr><td>电子原产地证书</td><td>中高</td><td>中高</td><td>中</td><td>官方或认可机构签发记录</td></tr>
+    <tr><td>标准化质检报告</td><td>中</td><td>中</td><td>中高</td><td>认可实验室签名及责任机制</td></tr>
+    <tr><td>IoT 温控与运输记录</td><td>中</td><td>中</td><td>中高</td><td>可信传感器、设备身份与防篡改</td></tr>
+  </table>
+  <div class="callout"><b>优先顺序取决于目标：</b>物流事件最适合早期商用原型；电子提单的贸易金融价值可能最高；发票与订单匹配最容易做技术演示。<span class="en"> Logistics for the earliest prototype; eBL for trade-finance value; invoice matching for the easiest demo.</span></div>
+
+  <h2 id="s1"><span class="num">02</span>装船即付款 · 建议优先做 MVP<span class="en">Shipment-triggered Escrow</span></h2>
+  <p>示例：出口商出售价值 100,000 USDC 的标准化工业零部件，货款事先锁入合约，确认装船后释放 80%，其余 20% 在后续约定条件满足后释放。<b>80/20 仅为设计示例，不是行业通用规则。</b></p>
+  <pre>买家将 100,000 USDC 存入 Escrow
+           ↓
+船公司系统记录「实际装船」事件
+           ↓
+TEE 从可信承运人接口读取并核验数据
+           ↓
+核对订单 / 箱号 / 航次 / 事件类型 / 时间
+           ↓
+生成与订单及里程碑绑定的证明
+           ↓
+TradeEventVerifier 验证证明及防重放标识
+           ↓
+争议期届满且无有效异议 → 释放 80,000 USDC</pre>
+  <p>在符合合同约定时，可以验证：某个与订单绑定的集装箱或运单，在指定期限内出现可信数据源记录的实际装船事件。可使用 DCSA Track &amp; Trace 的事件模型与承运人 API。</p>
+  <div class="callout"><b>关键边界：</b>「船公司记录已装船」不等于「箱内货物符合质量要求」。验证器必须核实数据源、记录与订单之间的可信绑定，并处理事件修改、撤回、延迟或冲突。</div>
+
+  <h2 id="s2"><span class="num">03</span>电子提单触发付款 · eBL Escrow<span class="en">Higher value, higher legal bar</span></h2>
+  <p>将<b>电子提单签发、状态与控制权转移</b>纳入付款条件，使部分跟单结算自动化。可验证条件包括：eBL 由合同认可的承运人或平台签发；与订单约定的港口、货物描述、装运时间等字段相符；满足「已装船」等所需运输状态；当合同要求时控制权已完成有效转移；提单未被撤销、作废或处于不符合结算条件的状态。</p>
+  <div class="callout"><b>两点必须写清：</b>这与传统信用证「审单而非直接验货」思路相近，但 <b>Escrow 不是信用证的完整替代品</b>；<b>eBL 不能简化为一个 PDF 哈希</b>——可转让电子记录涉及唯一控制、权利转移、平台规则以及适用法域的法律效力，需要从认可的平台取得可验证的状态与控制权事件。</div>
+
+  <h2 id="s3"><span class="num">04</span>单据相符付款 · Documentary Escrow<span class="en">Easiest early prototype</span></h2>
+  <p>验证电子发票、装箱单、订单和运输单据之间的标准化字段一致性：发票金额及币种符合合同；货物数量与订单允许的偏差范围一致；运输单据的目的港、装运日期符合约定；卖方身份与可信签发者记录一致；不同单据之间的引用关系一致。TEE 运行确定性的审单规则；ZKP 可用于证明金额在约定区间、主体及数量匹配，而不暴露完整合同和单据。</p>
+  <div class="warn"><b>但如果所有文件仅由卖家自行上传、没有可信签发者或原始系统校验，那么该系统只能证明文件内部一致，不能证明交易真实。</b></div>
+
+  <h2 id="multi"><span class="num">05</span>组合为多里程碑托管协议<span class="en">Multi-milestone orchestration</span></h2>
+  <table class="tbl">
+    <tr><th>里程碑</th><th>可验证条件</th><th style="text-align:right">示例放款比例</th></tr>
+    <tr><td>订单生效</td><td>双方确认合同及资金已锁定</td><td style="text-align:right">20%</td></tr>
+    <tr><td>实际装船</td><td>承运人可信装船事件</td><td style="text-align:right">50%</td></tr>
+    <tr><td>目的港卸货</td><td>可信卸货事件</td><td style="text-align:right">20%</td></tr>
+    <tr><td>最终确认</td><td>收货确认或合同约定争议期届满</td><td style="text-align:right">10%</td></tr>
+  </table>
+  <p class="note-en">以上金额分配是说明性参数，不是行业规则。</p>
+  <p><b>合约必须独立处理：</b></p>
+  <ul>
+    <li>证明已提交但尚未验证；证明已通过但仍在争议期；部分里程碑放款；</li>
+    <li>外部事件后续更正或撤销；争议冻结、仲裁、退款与超时处理；</li>
+    <li>资金不足、重复执行、失效证明和权限变更。</li>
+  </ul>
+  <div class="callout"><b>Incoterms 定义交货、风险和费用分担等规则，并不直接设定付款时间。</b>任何按 FOB、CIF 等术语定义的付款触发器，仍需在具体合同中单独约定。</div>
+</section>
+
+<footer class="site">
+  <div><b>Verifiable Trade Event Protocol</b> · 可验证贸易履约事件协议 <span class="sep">|</span> <a href="LICENSE">MIT License</a> <span class="sep">|</span> <a href="docs/RESEARCH.md">研究文档原文 Source</a> <span class="sep">|</span> <a href="https://github.com/sinyu1998-eng">GitHub</a></div>
+  <div style="margin-top:8px;font-size:12px">公开研究框架，不是已完成的系统安全审计、法律意见或第三方数据接入可用性承诺；文中所有金额、里程碑比例均为示例。<span class="en"> A public research framework — not an audit, legal opinion, or data-availability commitment.</span></div>
+</footer>
+</body></html>

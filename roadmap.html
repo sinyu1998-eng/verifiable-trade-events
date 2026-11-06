@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>路线 Roadmap · Verifiable Trade Event Protocol</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="ossbar">🌟 本项目已开源 Open-sourced · <a href="https://github.com/sinyu1998-eng">GitHub 仓库 Repository</a> · MIT License · 研究文档公开，欢迎 Issue 讨论 <span class="en">— public research, issues welcome</span> →</div>
+<header class="site">
+  <a class="logo" href="index.html">VTEP<b>·</b>Protocol</a>
+  <nav>
+    <a class="" href="index.html">首页 Home</a>
+    <a class="" href="whitepaper.html">白皮书 Whitepaper</a>
+    <a class="" href="architecture.html">架构 Architecture</a>
+    <a class="" href="scenarios.html">场景 Scenarios</a>
+    <a class="on" href="roadmap.html">路线 Roadmap</a>
+    <a class="" href="peer.html">参考 References</a>
+  </nav>
+</header>
+
+<div class="hero" style="padding:56px 6vw 60px">
+  <div class="kicker">Roadmap · §7–§8</div>
+  <h1>开发与研究优先级</h1>
+  <div class="en">P0 / P1 / P2 — and what this does NOT provide</div>
+</div>
+<section class="doc">
+  <div class="toc"><b style="color:var(--purple)">本页目录 · </b>
+    <a href="#p0">P0</a><a href="#p1">P1</a><a href="#p2">P2</a><a href="#later">后续能力</a><a href="#value">商业效果</a><a href="#not">不会天然提供</a>
+  </div>
+
+  <h2 id="p0"><span class="num">P0</span>DCSA T&amp;T → TEE Attestation → USDC Escrow<span class="en">Recommended minimal prototype</span></h2>
+  <div class="callout" style="font-size:15px"><b>最推荐的最小原型：</b>限定<b>一个承运人、一个贸易线路、一个标准化物流事件、一条付款规则</b>。</div>
+  <p>先验证四个事实：</p>
+  <ol class="flowlist">
+    <li>能否持续、合法地获取足够可信的事件数据？</li>
+    <li>如何证明 API 事件属于这笔订单而非另一笔订单？</li>
+    <li>该事件对买卖双方是否足以构成一个有商业意义的付款条件？</li>
+    <li>外部事件出现错误或回滚时，合约如何保护资金？</li>
+  </ol>
+
+  <h2 id="p1"><span class="num">P1</span>eBL → 自动化跟单结算<span class="en">Higher value, higher barrier</span></h2>
+  <p>研究有法律意义的 eBL 平台事件、控制权转移和相应法域的电子可转让记录制度。商业价值更高，但第三方集成与法律门槛也更高。</p>
+
+  <h2 id="p2"><span class="num">P2</span>Invoice + Packing List → 隐私单据匹配<span class="en">Fastest ZK demo</span></h2>
+  <p>可快速做 ZK 技术演示；但要从「内部数据一致」提升到「可信履约证明」，仍需可信签发者及原始数据来源。</p>
+
+  <h2 id="later"><span class="num">+</span>后续能力<span class="en">Later capabilities</span></h2>
+  <p>
+    <span class="pill">多签发机构 / 多来源交叉核验</span>
+    <span class="pill">保险、质检及电子原产地证书</span>
+    <span class="pill">争议、质押和可归责的责任机制</span>
+    <span class="pill">AI 眼镜采集缺少官方数字记录的现场证据</span>
+  </p>
+
+  <h2 id="value"><span class="num">07</span>商业上能产生什么效果<span class="en">Potential effects</span></h2>
+  <div class="grid g3">
+    <div class="card"><h3>对卖方</h3><div class="en">Exporter</div><p>买家预先锁定货款，卖方在达到约定的客观事件后可以自动收款，减少纯信用账期的不确定性。</p></div>
+    <div class="card"><h3>对买方</h3><div class="en">Importer</div><p>不必在货物尚无可验证进展时将全部款项直接交给卖家，可以依约分阶段付款。</p></div>
+    <div class="card"><h3>对双方</h3><div class="en">Both</div><p>把部分人工审单、反复确认和付款指令变成可复核的程序化流程，降低协调成本，也可能缩短结算等待时间。</p></div>
+  </div>
+
+  <h2 id="not"><span class="num">!</span>它不会天然提供<span class="en">What it does NOT provide</span></h2>
+  <div class="warn">
+    <b>不会天然提供</b>银行融资、信用创造、货物质量担保、全套跨境合规或争议执行机制。银行 API、船公司平台、eBL 法律框架及数据接入费用可能成为真实的成本瓶颈。跨境 USDC 收付款还需根据各法域具体评估外汇、支付、反洗钱、税务和贸易合规问题。
+  </div>
+  <p class="note-en" style="margin-top:20px">本文基于公开技术标准与协议设计思路提出研究框架，不是已完成的系统安全审计、法律意见或第三方数据接入可用性承诺。文中所有金额、里程碑比例均为示例。</p>
+</section>
+
+<footer class="site">
+  <div><b>Verifiable Trade Event Protocol</b> · 可验证贸易履约事件协议 <span class="sep">|</span> <a href="LICENSE">MIT License</a> <span class="sep">|</span> <a href="docs/RESEARCH.md">研究文档原文 Source</a> <span class="sep">|</span> <a href="https://github.com/sinyu1998-eng">GitHub</a></div>
+  <div style="margin-top:8px;font-size:12px">公开研究框架，不是已完成的系统安全审计、法律意见或第三方数据接入可用性承诺；文中所有金额、里程碑比例均为示例。<span class="en"> A public research framework — not an audit, legal opinion, or data-availability commitment.</span></div>
+</footer>
+</body></html>
