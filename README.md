@@ -51,7 +51,7 @@
 
 ---
 
-> 在线站点：**https://github.com/sinyu1998-eng/verifiable-trade-events** （GitHub Pages）
+> 在线站点 Live site：**https://sinyu1998-eng.github.io/verifiable-trade-events/** （GitHub Pages）
 
 ## 快速开始 / Quick start
 
