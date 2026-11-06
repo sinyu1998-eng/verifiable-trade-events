@@ -51,6 +51,8 @@
 
 ---
 
+> 在线站点：**https://github.com/sinyu1998-eng/verifiable-trade-events** （GitHub Pages）
+
 ## 快速开始 / Quick start
 
 纯静态站点，无构建步骤、无外部 CDN 依赖。
@@ -62,7 +64,6 @@ python3 -m http.server 8000
 
 部署到 GitHub Pages 时，直接把 **Source 指向仓库根目录 / 主分支**即可；所有链接均为相对路径。
 
-> **推送到 GitHub 后的一处待办**：各页面顶部 `ossbar` 与页脚中的 `https://github.com/sinyu1998-eng` 目前指向账号主页（占位），请替换为新仓库的实际地址。本仓库已完成本地初始化与首次提交，尚未关联 remote。
 
 ---
 
